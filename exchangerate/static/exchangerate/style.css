@@ -1,3 +1,17 @@
+.mainContainer{
+    padding: 20px;
+    min-height: 400px;
+}
+.chartDiv{
+    width: 85%;
+    margin: 0 auto;
+}
+.formContainer{
+    width: 60%;
+    margin: 0 auto;
+    font-size: 16px;
+    margin-top: 40px;
+}
 input, select {
   width: 100%;
   padding: 12px 20px;
@@ -25,4 +39,21 @@ input[type=submit]:hover {
 
 .errorlist {
   color: red;
+}
+
+@media only screen and (max-width: 940px){
+    .mainContainer{
+        width: 100%;
+        padding: 20px;
+        min-height: 400px;
+        height: auto;
+        box-sizing: border-box;
+    }
+    .chartDiv{
+        width: 100%;
+    }
+    .formContainer{
+        width: 100%!important;
+        margin-top: 20px;
+    }
 }

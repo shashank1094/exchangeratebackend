@@ -1,45 +1,53 @@
-<center>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     {% load static %}
-
     <link rel="stylesheet" type="text/css" href="{% static 'exchangerate/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+    <title> ERP : Exchange Rate Predictor </title>
+</head>
 
+<body>
+
+<div class="mainContainer">
     {% if errors %}
     <p class="errorlist">{{errors}}</p>
     {% endif %}
-
-    <div style="width:85%">
+    <div class="chartDiv">
         {% if following_days and predicted_data %}
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
-        <canvas id="line-chart" width="800" height="450"></canvas>
-        <script>
-new Chart(document.getElementById("line-chart"), {
-  type: 'line',
-  data: {
-    labels: {{following_days|safe}},
-    datasets: [{
-        data: {{predicted_data}},
-        label: "{{currency|safe}}",
-        borderColor: "#3e95cd",
-        fill: false
-      }]
-  },
-  options: {
-    title: {
-      display: true,
-      text: 'Estimations'
-    }
-  }
-});
-
-        </script>
+            <canvas id="line-chart" width="800" height="450"></canvas>
         {% endif %}
     </div>
 
-    <div style="width:60%">
+    <div class="formContainer">
         <form method="post">
             {% csrf_token %}
             {{ form }}
             <input type="submit" value="Submit">
         </form>
     </div>
-</center>
+</div>
+{% if following_days and predicted_data %}
+    <script>
+        new Chart(document.getElementById("line-chart"), {
+          type: 'line',
+          data: {
+            labels: {{following_days|safe}},
+            datasets: [{
+                data: {{predicted_data}},
+                label: "{{currency|safe}}",
+                borderColor: "#3e95cd",
+                fill: false
+              }]
+          },
+          options: {
+            title: {
+              display: true,
+              text: 'Estimations'
+            }
+          }
+        });
+    </script>
+{% endif %}
+</body>
+</html>

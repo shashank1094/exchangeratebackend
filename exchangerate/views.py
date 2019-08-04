@@ -17,7 +17,7 @@ class MyFormView(View):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
         errors = None
-        following_days, predicted_data, currency = None, None, None
+        following_days, predicted_data, currency = [], [], None
         if form.is_valid():
             cleaned_data = form.cleaned_data
             cleaned_data['before_date'] = cleaned_data.get('start_date') - datetime.timedelta(days=60)
