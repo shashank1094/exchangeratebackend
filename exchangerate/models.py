@@ -62,15 +62,30 @@ class ExchangeRate(TimeStampedModel):
                 result = response.json()
                 temp_base_currency = result.get('base')
                 temp_base_currency_obj, _ = Currency.objects.get_or_create(name=temp_base_currency)
-                for x in list(result.get('rates', {}).items()):
+                rates_list = list(result.get('rates', {}).items())
+                all_currencies = set()
+                if rates_list:
+                    for x in list(rates_list[0][1].items()):
+                        all_currencies.add(x[0])
+                existing_currencies = Currency.objects.all()
+                existing_currencies_name = set(list((existing_currencies.values_list('name', flat=True).distinct())))
+                names_to_be_added = all_currencies - existing_currencies_name
+                if names_to_be_added:
+                    Currency.objects.bulk_create([Currency(name=x) for x in names_to_be_added])
+                db_currencies = Currency.objects.all()
+                temp_target_currency_obj_dict = {}
+                for x in db_currencies:
+                    temp_target_currency_obj_dict[x.name.lower()] = x
+                for x in rates_list:
                     temp_date, temp_rate_dict = datetime.datetime.strptime(x[0], '%Y-%m-%d').date(), x[1]
                     for y in list(temp_rate_dict.items()):
                         temp_target_currency, temp_rate = y
-                        temp_target_currency_obj, _ = Currency.objects.get_or_create(name=temp_target_currency)
-                        temp_exchange_obj = cls(base_currency=temp_base_currency_obj,
-                                                target_currency=temp_target_currency_obj,
-                                                date=temp_date, rate=temp_rate)
-                        items_to_be_inserted.append(temp_exchange_obj)
+                        temp_target_currency_obj = temp_target_currency_obj_dict.get(temp_base_currency.lower())
+                        if temp_target_currency_obj:
+                            temp_exchange_obj = cls(base_currency=temp_base_currency_obj,
+                                                    target_currency=temp_target_currency_obj,
+                                                    date=temp_date, rate=temp_rate)
+                            items_to_be_inserted.append(temp_exchange_obj)
             else:
                 raise Exception(str(response.json()))
         if items_to_be_inserted:
